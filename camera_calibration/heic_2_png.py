@@ -3,12 +3,15 @@ from glob import glob
 from PIL import Image
 import pillow_heif
 
+# the code converts HEIC images to png
 # Register HEIF opener with PIL
 pillow_heif.register_heif_opener()
 
-input_folder = "./camera_calibration/images_heic"
-output_folder = "./camera_calibration/images_png"
+#input_folder = "./camera_calibration/images_heic"
+#output_folder = "./camera_calibration/images_png"
 
+input_folder = "./stereo_vision/images_heic"
+output_folder = "./stereo_vision/images_png"
 os.makedirs(output_folder, exist_ok=True)
 
 heic_files = glob(os.path.join(input_folder, "*.HEIC")) + \

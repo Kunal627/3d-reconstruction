@@ -1,3 +1,9 @@
+# camera_calib_cv2.py
+# Brief: Calibrate a camera from chessboard PNG images using OpenCV.
+# Inputs: PNG chessboard images located in `./camera_calibration/images_png`.
+# Outputs: Prints intrinsic matrix, distortion coefficients, and reprojection errors;
+#          returns (K, dist, rvecs, tvecs, img_paths, imgpoints). Visualizes matches.
+
 import cv2
 import numpy as np
 from glob import glob
@@ -7,7 +13,7 @@ from PIL import Image
 IMG_DIR = "./camera_calibration/images_png"   # folder of PNG chessboard images
 BOARD_SIZE = (7, 7)      # number of inner corners per row and column
 SQUARE_SIZE = 0.035      # square size in meters (35 mm)
-
+TEST = False     # whether to run the test and visualization
 # Termination criteria for cornerSubPix
 CRITERIA = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -111,8 +117,15 @@ def test_and_visualize(K, dist, rvecs, tvecs, img_paths, objpoints, imgpoints):
 
     cv2.destroyAllWindows()
 
+def save_calibration(file_path, K, dist, rvecs, tvecs, image_paths, imgpoints):
+    """Save calibration parameters to a file."""
+    np.savez(file_path, K=K, dist=dist, rvecs=rvecs, tvecs=tvecs, image_paths=image_paths, imgpoints=imgpoints)
+    print(f"Calibration parameters saved to {file_path}")
 
 if __name__ == "__main__":
     K, dist, rvecs, tvecs, img_paths, imgpoints = calibrate_camera()
-    objp = make_object_points(BOARD_SIZE, SQUARE_SIZE)
-    test_and_visualize(K, dist, rvecs, tvecs, img_paths, [objp]*len(img_paths), imgpoints)
+    save_calibration("./output/camera_calibration_params.npz", K, dist, rvecs, tvecs, img_paths, imgpoints)
+
+    if TEST:
+        objp = make_object_points(BOARD_SIZE, SQUARE_SIZE)
+        test_and_visualize(K, dist, rvecs, tvecs, img_paths, [objp]*len(img_paths), imgpoints)
